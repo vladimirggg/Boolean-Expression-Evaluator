@@ -137,9 +137,52 @@ namespace CourseProject
             return new string(result);
         }
 
+        public void Trim()
+        {
+            int start = 0;
+            int end = Str.Length - 1;
+            while (Str[start] == ' ')
+            {
+                start++;
+            }
+
+            while (Str[end] == ' ')
+            {
+                end--;
+            }
+
+            Str = Substring(start, end - start + 1);
+        }
+
         public override string ToString()
         {
             return Str;
+        }
+
+        internal int FindLastOccurrence(string v)
+        {
+            for (int i = Str.Length - substr.Length; i >= 0; i--)
+            {
+                if (Str[i] == substr[0])
+                {
+                    bool found = true;
+                    for (int j = 1; j < substr.Length; j++)
+                    {
+                        if (Str[i + j] != substr[j])
+                        {
+                            found = false;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return -1;
         }
     }
 }
