@@ -1,11 +1,11 @@
 namespace CourseProject.Hierarchy;
 
-public class Negation(IBooleanExpression expr) : IBooleanExpression
+public class Negation(IBooleanExpression expr) : IUnaryOperation
 {
-    private IBooleanExpression Expr { get; set; } = expr;
+    public IBooleanExpression Expression { get; set; } = expr;
 
     public bool Evaluate()
     {
-        return !Expr.Evaluate();
+        return !Expression.Evaluate();
     }
 }

@@ -1,9 +1,9 @@
 namespace CourseProject.Hierarchy;
 
-public class Conjunction(IBooleanExpression left, IBooleanExpression right) : IBooleanExpression
+public class Conjunction(IBooleanExpression left, IBooleanExpression right) : IBinaryOperation
 {
-    private IBooleanExpression Left { get; set; } = left;
-    private IBooleanExpression Right { get; set; } = right;
+    public IBooleanExpression Left { get; set; } = left;
+    public IBooleanExpression Right { get; set; } = right;
 
     public bool Evaluate()
     {

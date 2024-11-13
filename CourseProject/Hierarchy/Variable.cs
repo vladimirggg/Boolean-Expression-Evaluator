@@ -1,11 +1,12 @@
 namespace CourseProject.Hierarchy;
 
-public class Variable(bool value) : IBooleanExpression
+public class Variable(bool? value) : IBooleanExpression
 {
-    private bool Value { get; set; } = value;
+    public bool? Value { get; set; } = value;
 
     public bool Evaluate()
     {
-        return Value;
+        if (Value is null) throw new ArgumentException("The variable has not been set!");
+        return (bool)Value;
     }
 }
