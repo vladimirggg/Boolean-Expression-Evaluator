@@ -1,7 +1,6 @@
-namespace CourseProject.Hierarchy
+namespace CourseProject.Hierarchy;
+
+public interface IBooleanExpression
 {
-    public interface IBooleanExpression
-    {
-        bool Evaluate();
-    }
+    bool Evaluate();
 }

@@ -1,12 +1,11 @@
-namespace CourseProject.Hierarchy
-{
-    public class Variable(bool value) : IBooleanExpression
-    {
-        private bool Value { get; set; } = value;
+namespace CourseProject.Hierarchy;
 
-        public bool Evaluate()
-        {
-            return Value;
-        }
+public class Variable(bool value) : IBooleanExpression
+{
+    private bool Value { get; set; } = value;
+
+    public bool Evaluate()
+    {
+        return Value;
     }
 }
