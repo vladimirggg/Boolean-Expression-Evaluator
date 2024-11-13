@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using CourseProject.HashTable;
+using CourseProject.Hierarchy;
+using static System.Boolean;
 
 namespace CourseProject;
 
 public static class Handler
 {
-    private static readonly ExpressionTable Table = [];
+    private static readonly ExpressionTable Table = new ExpressionTable();
 
     private static void Define(string input)
     {
@@ -20,7 +23,7 @@ public static class Handler
         if (!AreAllParametersPresent(mutable))
             throw new ArgumentException("All parameters must be present in the expression.");
 
-        else if (!AreAllParametersDeclared(mutable))
+        if (!AreAllParametersDeclared(mutable))
             throw new ArgumentException("All parameters must be declared in the expression.");
 
         var expression = mutable.Substring(mutable.FindLastOccurrence("\"") + 1, mutable.FindLastOccurrence("\"")).ToLower();
@@ -53,9 +56,66 @@ public static class Handler
         return true;
     }
 
-    private static void Solve(string input)
+    private static bool Solve(string input)
     {
-        // TODO Solve an expression
+        var mutable = new StringProperties(input);
+        var index = mutable.FindFirstOccurrence("(");
+        
+        if (index == -1)
+            throw new ArgumentException("Invalid format. The expression must be formated as follows: _name(_parameters):\"_expression\".");
+        var name = mutable.Substring(0, index);
+        
+        var paramStr = mutable.Substring(index + 1, mutable.FindLastOccurrence(")")).Split(", ");
+        var parameters = new List<bool>(paramStr.Length);
+        
+        for (var i = 0; i < paramStr.Length; i++)
+        {
+            TryParse(paramStr[i], out var result);
+            parameters[i] = result;
+        }
+
+        var expression = Table[name];
+        
+        if (VariableCount(expression) != parameters.Count)
+            throw new ArgumentException("Parameters are not matching the signature!");
+
+        PopulateVariables(expression, parameters);
+        return expression.Evaluate();
+    }
+
+    private static int VariableCount(IBooleanExpression expr)
+    {
+        while (true)
+        {
+            switch (expr)
+            {
+                case Variable:
+                    return 1;
+                case IBinaryOperation binaryOperation:
+                    return VariableCount(binaryOperation.Left) + VariableCount(binaryOperation.Right);
+                case IUnaryOperation unaryOperation:
+                    return VariableCount(unaryOperation.Expression);
+            }
+            return 0;
+        }
+    }
+
+    private static void PopulateVariables(IBooleanExpression expr, List<bool> parameters)
+    {
+        switch(expr)
+        {
+            case Variable variable:
+                variable.Value = parameters[0];
+                parameters.RemoveAt(0);
+                return;
+            case IBinaryOperation binaryOperation:
+                PopulateVariables(binaryOperation.Left, parameters);
+                PopulateVariables(binaryOperation.Right, parameters);
+                return;
+            case IUnaryOperation unaryOperation:
+                PopulateVariables(unaryOperation.Expression, parameters);
+                return;
+        }
     }
 
     private static void All(string input)
