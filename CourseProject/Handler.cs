@@ -7,8 +7,9 @@ namespace CourseProject
 {
     public static class Handler
     {
-        private static readonly ExpressionTable table = [];
-        public static void Define(string input)
+        private static readonly ExpressionTable Table = [];
+
+        private static void Define(string input)
         {
             var mutable = new StringProperties(input);
             var index = mutable.FindFirstOccurrence("(");
@@ -23,7 +24,7 @@ namespace CourseProject
                 throw new ArgumentException("All parameters must be declared in the expression.");
 
             var expression = mutable.Substring(mutable.FindLastOccurrence("\"") + 1, mutable.FindLastOccurrence("\"")).ToLower();
-            table.Add(name, expression);
+            Table.Add(name, expression);
         }
         
         private static bool AreAllParametersPresent(StringProperties input)
@@ -51,24 +52,24 @@ namespace CourseProject
             }
             return true;
         }
-        
-        public static void Solve(string input)
+
+        private static void Solve(string input)
         {
             // TODO Solve an expression
         }
 
-        public static void All(string input)
+        private static void All(string input)
         {
             // TODO Print table representing all possible values of the 
             // expression with all the posible values of the variables
         }
 
-        public static void Find(string input)
+        private static void Find(string input)
         {
             // TODO Find the expression that matches the result of the table
         }
 
-        public static void HandleRequest(string input)
+        private static void HandleRequest(string input)
         {
             var mutableString = new StringProperties(input);
             var action = new StringProperties(mutableString.Split(' ')[0]);
@@ -93,10 +94,10 @@ namespace CourseProject
 
         }
 
-        public static void Menu()
+        public static void Main()
         {
             Console.WriteLine("Welcome to the Boolean Expression Evaluator!\n Please enter an option or type: \"exit\" to stop the program:");
-            var input = Console.ReadLine();
+            var input = Console.ReadLine()!;
             while (input != "exit")
             {
                 HandleRequest(input);

@@ -1,5 +1,3 @@
-using System;
-
 namespace CourseProject
 {
     public class StringProperties(string str)
@@ -8,27 +6,27 @@ namespace CourseProject
         // Function to split a string by a delimiter
         public string[] Split(char delimiter)
         {
-            string[] parts = new string[CharCount(' ') + 1];
-            int index = 0;
+            var parts = new string[CharCount(' ') + 1];
+            var index = 0;
 
             //Iterate through the string and split it by the delimiter
-            for (int i = 0; i < Str.Length; i++)
+            foreach (var t in Str)
             {
-                if(Str[i] == delimiter)
+                if(t == delimiter)
                 {
                     index++;
                     continue;
                 }
-                parts[index] += Str[i];
+                parts[index] += t;
             }
 
             return parts;
         }
 
-        public int CharCount(char character)
+        private int CharCount(char character)
         {
-            int count = 0;
-            foreach (char c in Str)
+            var count = 0;
+            foreach (var c in Str)
             {
                 if (c == character)
                     count++;
@@ -40,8 +38,8 @@ namespace CourseProject
         // Function to get a substring from a string
         public string Substring(int startIndex, int length)
         {
-            string result = "";
-            for(int i = startIndex; i < length || i < Str.Length; i++)
+            var result = "";
+            for(var i = startIndex; i < length || i < Str.Length; i++)
             {
                 result += Str[i];
             }
@@ -57,24 +55,20 @@ namespace CourseProject
         // Function to check if a string contains a substring
         public bool Contains(string substr)
         {
-            for (int i = 0; i < Str.Length; i++)
+            for (var i = 0; i < Str.Length; i++)
             {
-                if (Str[i] == substr[0])
+                if (Str[i] != substr[0]) continue;
+                var found = true;
+                for (var j = 1; j < substr.Length; j++)
                 {
-                    bool found = true;
-                    for (int j = 1; j < substr.Length; j++)
-                    {
-                        if (Str[i + j] != substr[j])
-                        {
-                            found = false;
-                            break;
-                        }
-                    }
+                    if (Str[i + j] == substr[j]) continue;
+                    found = false;
+                    break;
+                }
 
-                    if (found)
-                    {
-                        return true;
-                    }
+                if (found)
+                {
+                    return true;
                 }
             }
 
@@ -83,24 +77,20 @@ namespace CourseProject
 
         public int FindFirstOccurrence(string substr)
         {
-            for (int i = 0; i < Str.Length; i++)
+            for (var i = 0; i < Str.Length; i++)
             {
-                if (Str[i] == substr[0])
+                if (Str[i] != substr[0]) continue;
+                var found = true;
+                for (var j = 1; j < substr.Length; j++)
                 {
-                    bool found = true;
-                    for (int j = 1; j < substr.Length; j++)
-                    {
-                        if (Str[i + j] != substr[j])
-                        {
-                            found = false;
-                            break;
-                        }
-                    }
+                    if (Str[i + j] == substr[j]) continue;
+                    found = false;
+                    break;
+                }
 
-                    if (found)
-                    {
-                        return i;
-                    }
+                if (found)
+                {
+                    return i;
                 }
             }
 
@@ -110,8 +100,8 @@ namespace CourseProject
         // Function to convert a string to uppercase
         public string ToUpper()
         {
-            char[] result = Str.ToCharArray();
-            for (int i = 0; i < Str.Length; i++)
+            var result = Str.ToCharArray();
+            for (var i = 0; i < Str.Length; i++)
             {
                 if (Str[i] >= 'a' && Str[i] <= 'z')
                 {
@@ -125,8 +115,8 @@ namespace CourseProject
         // Function to convert a string to lowercase
         public string ToLower()
         {
-            char[] result = Str.ToCharArray();
-            for (int i = 0; i < Str.Length; i++)
+            var result = Str.ToCharArray();
+            for (var i = 0; i < Str.Length; i++)
             {
                 if (Str[i] >= 'A' && Str[i] <= 'A')
                 {
@@ -139,8 +129,8 @@ namespace CourseProject
 
         public void Trim()
         {
-            int start = 0;
-            int end = Str.Length - 1;
+            var start = 0;
+            var end = Str.Length - 1;
             while (Str[start] == ' ')
             {
                 start++;
@@ -161,27 +151,19 @@ namespace CourseProject
 
         internal int FindLastOccurrence(string v)
         {
-            for (int i = Str.Length - substr.Length; i >= 0; i--)
+            for (var i = Str.Length - v.Length; i >= 0; i--)
             {
-                if (Str[i] == substr[0])
+                if (Str[i] != v[0]) continue;
+                var found = true;
+                for (var j = 1; j < v.Length; j++)
                 {
-                    bool found = true;
-                    for (int j = 1; j < substr.Length; j++)
-                    {
-                        if (Str[i + j] != substr[j])
-                        {
-                            found = false;
-                            break;
-                        }
-                    }
-
-                    if (found)
-                    {
-                        return i;
-                    }
+                    if (Str[i + j] == v[j]) continue;
+                    found = false;
+                    break;
                 }
-            }
 
+                if (found) return i;
+            }
             return -1;
         }
     }
