@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Threading.Channels;
 using CourseProject.HashTable;
 using CourseProject.Hierarchy;
 using static System.Boolean;
@@ -15,6 +16,7 @@ public static class Handler
     private static void Define(string input)
     {
         var mutable = new StringProperties(input);
+        mutable.ToLower();
         var index = mutable.FindFirstOccurrence("(");
         if (index == -1)
             throw new ArgumentException("Invalid format. The expression must be formated as follows: _name(_parameters):\"_expression\".");
@@ -26,14 +28,15 @@ public static class Handler
         if (!AreAllParametersDeclared(mutable))
             throw new ArgumentException("All parameters must be declared in the expression.");
 
-        var expression = mutable.Substring(mutable.FindLastOccurrence("\"") + 1, mutable.FindLastOccurrence("\"")).ToLower();
+        var expression = mutable.Substring(mutable.FindFirstOccurrence("\"") + 1, mutable.FindLastOccurrence("\"")).ToLower();
         Table.Add(name, expression);
+        Console.WriteLine($"Expression {name} has been added to the table.");
     }
         
     private static bool AreAllParametersPresent(StringProperties input)
     {
-        var parameters = input.Substring(input.FindFirstOccurrence("(") + 1, input.FindFirstOccurrence(")")).Split(',');
-        var expression = input.Substring(input.FindFirstOccurrence("\"") + 1, input.FindLastOccurrence("\"")).Split(' ');
+        var parameters = input.Substring(input.FindFirstOccurrence("(") + 1, input.FindFirstOccurrence(")")).Split(", ");
+        var expression = new StringProperties(input.Substring(input.FindFirstOccurrence("\"") + 1, input.FindLastOccurrence("\"")));
 
         foreach (var parameter in parameters)
         {
@@ -45,12 +48,12 @@ public static class Handler
 
     private static bool AreAllParametersDeclared(StringProperties input)
     {
-        var parameters = input.Substring(input.FindFirstOccurrence("(") + 1, input.FindFirstOccurrence(")")).Split(',');
-        var expression = input.Substring(input.FindLastOccurrence("\"") + 1, input.Length()).Split(' ');
+        var parameters = input.Substring(input.FindFirstOccurrence("(") + 1, input.FindFirstOccurrence(")")).Split(", ");
+        var expression = input.Substring(input.FindFirstOccurrence("\"") + 1, input.FindLastOccurrence("\""));
 
         foreach (var item in expression)
         {
-            if(item.All(char.IsLetter) && !parameters.Contains(item))
+            if(char.IsLetter(item) && !parameters.Contains($"{item}"))
                 return false;
         }
         return true;
@@ -58,6 +61,7 @@ public static class Handler
 
     private static bool Solve(string input)
     {
+        // TODO fix the tokenizing of the parameters
         var mutable = new StringProperties(input);
         var index = mutable.FindFirstOccurrence("(");
         
@@ -118,10 +122,54 @@ public static class Handler
         }
     }
 
+    private static string Join(string[] arr, string separator)
+    {
+        var result = "";
+        for (var i = 0; i < arr.Length; i++)
+        {
+            result += arr[i];
+            if (i != arr.Length - 1)
+                result += separator;
+        }
+        return result;
+    }
+    
+    private static string Join(List<bool> arr, string separator)
+    {
+        var result = "";
+        for (var i = 0; i < arr.Count; i++)
+        {
+            result += arr[i] ? "1" : "0";
+            if (i != arr.Count - 1)
+                result += separator;
+        }
+        return result;
+    }
+    
     private static void All(string input)
     {
-        // TODO Print table representing all possible values of the 
-        // expression with all the posible values of the variables
+        //TODO Fix the binary operation because I get index out of range exception
+        var expression = Table[input];
+        var paramCount = VariableCount(expression);
+        var variables = new string[paramCount];
+        
+        for (var i = 0; i < paramCount; i++)
+        {
+            variables[i] = $"{(char)('a' + i)}"; 
+        }
+
+        Console.WriteLine(Join(variables, " , ") + $" : {input}");
+        for (var mask = 0; mask < Math.Pow(2, paramCount); mask++)
+        {
+            var parameters = new List<bool>(paramCount);
+            for (var j = 0; j < paramCount; j++)
+            {
+                parameters.Add((mask & (1 << j)) != 0);
+            }
+            var paramStr = Join(parameters, " , ");
+            PopulateVariables(expression, parameters);
+            Console.WriteLine(paramStr + $" : {expression.Evaluate()}");
+        }
     }
 
     private static void Find(string input)
@@ -161,6 +209,7 @@ public static class Handler
         while (input != "exit")
         {
             HandleRequest(input);
+            input = Console.ReadLine()!;
         }
     }
 }

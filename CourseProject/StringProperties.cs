@@ -36,10 +36,15 @@ public class StringProperties(string str)
     }
 
     // Function to get a substring from a string
-    public string Substring(int startIndex, int length)
+    public string Substring(int startIndex, int endIndex)
     {
+        if(endIndex > Str.Length)
+            throw new IndexOutOfRangeException("The length of the substring exceeds the length of the string.");
+        if(startIndex < 0)
+            throw new IndexOutOfRangeException("The start index of the substring is less than 0.");
+        
         var result = "";
-        for(var i = startIndex; i < length || i < Str.Length; i++)
+        for(var i = startIndex; i < endIndex; i++)
         {
             result += Str[i];
         }
