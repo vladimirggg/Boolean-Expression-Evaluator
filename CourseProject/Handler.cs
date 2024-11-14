@@ -59,7 +59,7 @@ public static class Handler
         return true;
     }
 
-    private static bool Solve(string input)
+    private static void Solve(string input)
     {
         // TODO fix the tokenizing of the parameters
         var mutable = new StringProperties(input);
@@ -74,8 +74,7 @@ public static class Handler
         
         for (var i = 0; i < paramStr.Length; i++)
         {
-            TryParse(paramStr[i], out var result);
-            parameters[i] = result;
+            parameters.Add(paramStr[i] == "1");
         }
 
         var expression = Table[name];
@@ -84,7 +83,7 @@ public static class Handler
             throw new ArgumentException("Parameters are not matching the signature!");
 
         PopulateVariables(expression, parameters);
-        return expression.Evaluate();
+        Console.WriteLine($"{Join(paramStr, " , ")} : {expression.Evaluate()}");
     }
 
     private static int VariableCount(IBooleanExpression expr)
@@ -148,7 +147,6 @@ public static class Handler
     
     private static void All(string input)
     {
-        //TODO Fix the binary operation because I get index out of range exception
         var expression = Table[input];
         var paramCount = VariableCount(expression);
         var variables = new string[paramCount];
