@@ -12,6 +12,7 @@ namespace CourseProject;
 public static class Handler
 {
     private static readonly ExpressionTable Table = new ExpressionTable();
+    private static readonly SolutionTable Solutions = new SolutionTable();
 
     private static void Define(string input)
     {
@@ -22,6 +23,11 @@ public static class Handler
             throw new ArgumentException("Invalid format. The expression must be formated as follows: _name(_parameters):\"_expression\".");
 
         var name = mutable.Substring(0, index);
+        if (Table.IsPresent(name))
+        {
+            Console.WriteLine("Cannot predefine an expression that is already present in the table.");
+            return;
+        }
         if (!AreAllParametersPresent(mutable))
             throw new ArgumentException("All parameters must be present in the expression.");
 
@@ -61,7 +67,6 @@ public static class Handler
 
     private static void Solve(string input)
     {
-        // TODO fix the tokenizing of the parameters
         var mutable = new StringProperties(input);
         var index = mutable.FindFirstOccurrence("(");
         
@@ -77,29 +82,37 @@ public static class Handler
             parameters.Add(paramStr[i] == "1");
         }
 
-        var expression = Table[name];
+        bool result;
+        try
+        {
+            result = Solutions.Find(name, parameters);
+        }
+        catch (Exception e)
+        {
+            var expression = Table[name];
         
-        if (VariableCount(expression) != parameters.Count)
-            throw new ArgumentException("Parameters are not matching the signature!");
+            if (VariableCount(expression) != parameters.Count)
+                throw new ArgumentException("Parameters are not matching the signature!");
 
-        PopulateVariables(expression, parameters);
-        Console.WriteLine($"{Join(paramStr, " , ")} : {expression.Evaluate()}");
+            PopulateVariables(expression, parameters);
+            result = expression.Evaluate();
+            Solutions.Add(name, parameters, result);
+        }
+        Console.WriteLine($"{Join(paramStr, " , ")} : {result}");
     }
 
     private static int VariableCount(IBooleanExpression expr)
     {
         while (true)
         {
-            switch (expr)
+            return expr switch
             {
-                case Variable:
-                    return 1;
-                case IBinaryOperation binaryOperation:
-                    return VariableCount(binaryOperation.Left) + VariableCount(binaryOperation.Right);
-                case IUnaryOperation unaryOperation:
-                    return VariableCount(unaryOperation.Expression);
-            }
-            return 0;
+                Variable => 1,
+                IBinaryOperation binaryOperation => VariableCount(binaryOperation.Left) +
+                                                    VariableCount(binaryOperation.Right),
+                IUnaryOperation unaryOperation => VariableCount(unaryOperation.Expression),
+                _ => 0
+            };
         }
     }
 

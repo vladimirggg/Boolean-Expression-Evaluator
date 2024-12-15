@@ -5,7 +5,6 @@ namespace CourseProject.HashTable;
 public class ExpressionTable
 {
     private readonly MyDictionary<string, IBooleanExpression> _expressions = new MyDictionary<string, IBooleanExpression>();
-    // private MyDictionary<string, bool> _exprValues = new MyDictionary<string, bool>();
 
     public IBooleanExpression this[string key] => _expressions[key];
 
@@ -109,5 +108,10 @@ public class ExpressionTable
     public void Add(string exprName, string expr)
     {
         _expressions[exprName] = ConstructNode(expr);
+    }
+    
+    public bool IsPresent(string exprName)
+    {
+        return _expressions.ContainsKey(exprName);
     }
 }
